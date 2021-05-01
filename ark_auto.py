@@ -40,7 +40,7 @@ def run(device, args):
             image = numpy.array(image, dtype=numpy.uint8)
 
             checkPoint = image[825][661]
-            if 209 <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
+            if 189 <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
                 print("FINISHED\n---------------------")
                 finished = True
 
