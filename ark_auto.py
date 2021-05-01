@@ -27,6 +27,7 @@ def run(device, args):
         device.shell("input touchscreen tap 2100 975")
         time.sleep(3)
         device.shell("input touchscreen tap 1880 785")
+        t1 = time.time()
 
         finished = False
         while not finished:
@@ -41,9 +42,9 @@ def run(device, args):
 
             checkPoint = image[825][661]
             if 189 <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
-                print("FINISHED\n---------------------")
+                t2 = time.time()
+                print(f"FINISHED\nStage time: {t2-t1} \n---------------------")
                 finished = True
-
         time.sleep(DELAY_AFTER_FINISHED)
         device.shell("input touchscreen tap 1500 620")
         time.sleep(DELAY_BETWEEN_RUNS)
@@ -56,7 +57,7 @@ def main():
     args = parser.parse_args()
     
     device = init()
-    sys.stdout.write(run(device, args))
+    sys.stdout.write(str(run(device, args)))
     
 if __name__ == "__main__":
     main()
