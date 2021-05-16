@@ -5,6 +5,7 @@ from PIL import Image
 import numpy
 import argparse
 import sys
+import math
 
 def init():
     adb = Client(host='127.0.0.1', port=5037)
@@ -18,14 +19,20 @@ def init():
     return device
 
 def run(device, args):
-    for i in range(args.n):
-        DELAY_BETWEEN_RUNS = 10
-        DELAY_AFTER_FINISHED = 5
+    if(args.c * args.s != 0):
+        n = math.floor(args.s / args.c)
+    else:
+        n = 1
+    if args.n > 1:
+        n = min(n, args.n)
+    for i in range(n):
+        DELAY_BETWEEN_RUNS = 4
+        DELAY_AFTER_FINISHED = 3
         
-        print(i+1, ' : RUNNING')
+        print(f'{i+1} / {n}: RUNNING')
 
         device.shell("input touchscreen tap 2100 975")
-        time.sleep(3)
+        time.sleep(2)
         device.shell("input touchscreen tap 1880 785")
         t1 = time.time()
 
@@ -41,12 +48,12 @@ def run(device, args):
             image = numpy.array(image, dtype=numpy.uint8)
 
             checkPoint = image[825][661]
-            if 189 <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
+            if args.w <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
                 t2 = time.time()
                 print(f"FINISHED\nStage time: {t2-t1} \n---------------------")
                 finished = True
         time.sleep(DELAY_AFTER_FINISHED)
-        device.shell("input touchscreen tap 1500 620")
+        device.shell(f"input touchscreen tap {args.x} {args.y} ")
         time.sleep(DELAY_BETWEEN_RUNS)
     print("COMPLETED")
 
@@ -54,6 +61,12 @@ def run(device, args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', type=int, default=1,  help='Number of runs')
+    parser.add_argument('-s', type=int, default=0,  help='Current Sanity')
+    parser.add_argument('-c', type=int, default=0,  help='Cost of stage')
+    parser.add_argument('-x', type=int, default='1500', help='detect point x')
+    parser.add_argument('-y', type=int, default='620', help='detect point y')
+    parser.add_argument('-w', type=int, default='180', help='white value')
+    
     args = parser.parse_args()
     
     device = init()
