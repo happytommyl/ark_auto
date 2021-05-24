@@ -4,8 +4,10 @@ from ppadb.command import host
 from PIL import Image
 import numpy
 import argparse
+from configparser import ConfigParser
 import sys
 import math
+
 
 def init():
     adb = Client(host='127.0.0.1', port=5037)
@@ -18,7 +20,7 @@ def init():
     device = devices[0]
     return device
 
-def run(device, args):
+def run(device, args, config):
     if(args.c * args.s != 0):
         n = math.floor(args.s / args.c)
     else:
@@ -31,9 +33,9 @@ def run(device, args):
         
         print(f'{i+1} / {n}: RUNNING')
 
-        device.shell("input touchscreen tap 2100 975")
+        device.shell(f"input touchscreen tap {config['start_button_0']}")
         time.sleep(2)
-        device.shell("input touchscreen tap 1880 785")
+        device.shell(f"input touchscreen tap {config['start_button_1']}")
         t1 = time.time()
 
         finished = False
@@ -48,12 +50,12 @@ def run(device, args):
             image = numpy.array(image, dtype=numpy.uint8)
 
             checkPoint = image[825][661]
-            if args.w <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
+            if int(config['white_value']) <= checkPoint[0] == checkPoint[1] == checkPoint[2] <= 255:
                 t2 = time.time()
                 print(f"FINISHED\nStage time: {t2-t1} \n---------------------")
                 finished = True
         time.sleep(DELAY_AFTER_FINISHED)
-        device.shell(f"input touchscreen tap {args.x} {args.y} ")
+        device.shell(f"input touchscreen tap {config['detect_point']} ")
         time.sleep(DELAY_BETWEEN_RUNS)
     print("COMPLETED")
 
@@ -63,14 +65,14 @@ def main():
     parser.add_argument('-n', type=int, default=1,  help='Number of runs')
     parser.add_argument('-s', type=int, default=0,  help='Current Sanity')
     parser.add_argument('-c', type=int, default=0,  help='Cost of stage')
-    parser.add_argument('-x', type=int, default='1500', help='detect point x')
-    parser.add_argument('-y', type=int, default='620', help='detect point y')
-    parser.add_argument('-w', type=int, default='180', help='white value')
     
     args = parser.parse_args()
-    
+    config = ConfigParser()
+    config.read('config.ini')
+    config = config['display']
+
     device = init()
-    sys.stdout.write(str(run(device, args)))
+    sys.stdout.write(str(run(device, args, config)))
     
 if __name__ == "__main__":
     main()
