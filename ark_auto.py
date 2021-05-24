@@ -57,7 +57,7 @@ def run(device, args, config):
         time.sleep(DELAY_AFTER_FINISHED)
         device.shell(f"input touchscreen tap {config['detect_point']} ")
         time.sleep(DELAY_BETWEEN_RUNS)
-    print("COMPLETED")
+    return "COMPLETED"
 
 
 def main():
@@ -65,7 +65,7 @@ def main():
     parser.add_argument('-n', type=int, default=1,  help='Number of runs')
     parser.add_argument('-s', type=int, default=0,  help='Current Sanity')
     parser.add_argument('-c', type=int, default=0,  help='Cost of stage')
-    
+
     args = parser.parse_args()
     config = ConfigParser()
     config.read('config.ini')
