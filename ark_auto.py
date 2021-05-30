@@ -7,10 +7,13 @@ import argparse
 from configparser import ConfigParser
 import sys
 import math
+import os
 
 
 def init():
+    os.system('adb devices -l')
     adb = Client(host='127.0.0.1', port=5037)
+
     devices = adb.devices()
 
     if len(devices) == 0:
@@ -73,6 +76,7 @@ def main():
 
     device = init()
     sys.stdout.write(str(run(device, args, config)))
+    os.system('adb kill-server')
     
 if __name__ == "__main__":
     main()
