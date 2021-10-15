@@ -8,7 +8,7 @@ from configparser import ConfigParser
 import sys
 import math
 import os
-
+import progressbar
 
 def init():
     os.system('adb devices -l')
@@ -24,15 +24,17 @@ def init():
     return device
 
 def run(device, args, config):
+    bar = progressbar
+
     if(args.c * args.s != 0):
         n = math.floor(args.s / args.c)
     else:
         n = 1
     if args.n > 1:
         n = min(n, args.n)
-    for i in range(n):
+    for i in bar.progressbar(range(n)):
         DELAY_BETWEEN_RUNS = 4
-        DELAY_AFTER_FINISHED = 3
+        DELAY_AFTER_FINISHED = 5
         
         print(f'{i+1} / {n}: RUNNING')
 
